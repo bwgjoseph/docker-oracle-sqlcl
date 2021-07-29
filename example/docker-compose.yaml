@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  sqlcl:
+    image: bwgjoseph/oracle-sqlcl:21.2.1.195.1252
+    container_name: oracle-sqlcl
+    volumes:
+      - ./oracle:/oracle
+    networks:
+      - orcl
+
+networks:
+  orcl:
+    external: true

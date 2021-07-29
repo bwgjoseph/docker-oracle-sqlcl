@@ -1,22 +1,21 @@
-# Original source from https://github.com/lucassampsouza/ords_apex
-FROM openjdk:8-jre-alpine
-LABEL maintainer="Martin DSouza <martin@talkapex.com>"
+FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
+LABEL org.opencontainers.image.authors="Joseph Gan <josephgan@live.com.sg>"
 
-ENV TZ="GMT" \
+ENV TZ="Asia/Singapore" \
   SQLCL_DIR="/usr/local/sqlcl" \
-  SQLCL_BIN_NAME="sqlcl" \ 
+  SQLCL_BIN_NAME="sqlcl" \
   PATH="/usr/local/sqlcl/bin:${PATH}" \
-  SQLPATH="/oracle/" \
+  SQLPATH="/oracle" \
   # #12 Fixes issue with 20.2
-  LANG="en_US.utf8"  
+  LANG="en_US.utf8" \
+  SH_SCRIPT_FILENAME=run.sh
 
 COPY ["files/sqlcl-*.zip", "scripts/*", "/tmp/"]
 
-# This is a dummy volume to reference user's custom scripts
-# /sqlcl: For use of pwd
 # /oracle: to reference login.sql and sqlcl aliases
-VOLUME ["/sqlcl","/oracle"]
-WORKDIR "/sqlcl"
+# VOLUME ["/sqlcl","/oracle"]
+VOLUME ["/oracle"]
+WORKDIR "/oracle"
 
 RUN echo "" && \
   chmod +x /tmp/install-sqlcl.sh && \
@@ -33,9 +32,8 @@ RUN echo "" && \
   echo ""
 
 # #9: Used to be just sqlcl but caused an issue when $TNS_ADMIN was not set
-# ENTRYPOINT ["sqlcl"]
 ENTRYPOINT ["/tmp/start-container.sh"]
 CMD ["/nolog"]
 
 # debug
-# ENTRYPOINT [ "/bin/ash" ]
+# ENTRYPOINT [ "/bin/bash" ]

@@ -1,12 +1,44 @@
 # Oracle SQLcl Docker Image
 
-- [Build Image](#build-image)
-- [Run](#run)
-- [Volumes](#volumes)
-- [`/oracle/` Folder](#oracle-folder)
-  - [`login.sql`](#loginsql)
-  - [Aliases](#aliases)
-  - [Oracle Wallet / Oracle OCI ATP](#oracle-wallet--oracle-oci-atp)
+This is based heavily on [docker-oracle-sqlcl](https://github.com/martindsouza/docker-oracle-sqlcl) and made modification for own usage
+
+The container will start-up and run `/oracle/run.sh` script. This allow flexibility to run custom code without restriction. The container only provides `sqlcl` as a tool to achieve our goal
+
+## Key Changes
+
+The key changes are
+
+- Upgrade to `adoptopenjdk/openjdk11:jre-11.0.11_9-alpine`
+- Invoke a shell script (default to `run.sh`) passed in via `/oracle` mounted path in `start-container.sh`.
+  - Supports passing different shell script filename via `SH_SCRIPT_FILENAME` environment variable
+
+### Build
+
+```sh
+docker build -t bwgjoseph/oracle-sqlcl:21.2.1.195.1252 -t bwgjoseph/oracle-sqlcl:latest .
+```
+
+### Push
+
+```sh
+docker push bwgjoseph/oracle-sqlcl:latest
+docker push bwgjoseph/oracle-sqlcl:21.2.1.195.1252
+```
+
+---
+
+- [Oracle SQLcl Docker Image](#oracle-sqlcl-docker-image)
+  - [Key Changes](#key-changes)
+    - [Build](#build)
+    - [Push](#push)
+  - [Build Image](#build-image)
+  - [Run](#run)
+  - [Volumes](#volumes)
+  - [`/oracle/` Folder](#oracle-folder)
+    - [`login.sql`](#loginsql)
+    - [Aliases](#aliases)
+    - [Oracle Wallet / Oracle OCI ATP](#oracle-wallet--oracle-oci-atp)
+      - [Updating `sqlnet.ora` file](#updating-sqlnetora-file)
 
 
 ## Build Image
@@ -64,7 +96,7 @@ Parameter | Description
 Volume | Description
 ---------|----------
 `/sqlcl` | This is the folder that SQLcl will reference
-`/oracle` | This is the folder that you will put `login.sql` and can load `alias` from here. Ex: `alias load /oracle/sqlcl-alias.xml`. Note the reference is to the container's local `/oracle` folder and not your full path. 
+`/oracle` | This is the folder that you will put `login.sql` and can load `alias` from here. Ex: `alias load /oracle/sqlcl-alias.xml`. Note the reference is to the container's local `/oracle` folder and not your full path.
 
 
 ## `/oracle/` Folder
@@ -97,7 +129,7 @@ To load an alias see the previous `login.sql` file example. You should store ali
 
 ### Oracle Wallet / Oracle OCI ATP
 
-When connecting to an Oracle Cloud (OCI) Autonomous Transaction Processing (ATP) database you'll need to reference a folder that contains the wallet information provided by the ATP instance [docs](https://docs.cloud.oracle.com/iaas/Content/Database/Tasks/adbconnecting.htm). 
+When connecting to an Oracle Cloud (OCI) Autonomous Transaction Processing (ATP) database you'll need to reference a folder that contains the wallet information provided by the ATP instance [docs](https://docs.cloud.oracle.com/iaas/Content/Database/Tasks/adbconnecting.htm).
 
 In the examples above we've mapped `~/Documents/Oracle/` (laptop) to `/oracle` (container) volume. To handle the OCI wallet requirement do the following.
 
